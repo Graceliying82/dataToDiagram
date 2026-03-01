@@ -1,0 +1,13 @@
+Source,Target,Users
+Homepage,Product Page,4500
+Homepage,Pricing,2800
+Homepage,Blog,1200
+Product Page,Sign Up,1800
+Product Page,Demo,900
+Pricing,Sign Up,2100
+Pricing,Contact Sales,600
+Sign Up,Onboarding,3200
+Demo,Sign Up,700
+Blog,Product Page,400
+Onboarding,Active User,2600
+Contact Sales,Enterprise Deal,180
