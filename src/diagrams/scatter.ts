@@ -1,5 +1,5 @@
 import type { DiagramRenderer, EChartsOption, DataSet, DiagramSpec } from './base';
-import { createDraggableLegend, createResizableLabel } from '../utils/legendUtils';
+import { createResizableLabel } from '../utils/legendUtils';
 
 export const scatterRenderer: DiagramRenderer = {
   toOption(data: DataSet, spec: DiagramSpec): EChartsOption {
@@ -25,8 +25,9 @@ export const scatterRenderer: DiagramRenderer = {
     const maxSize = sizeValues.length > 0 ? Math.max(...sizeValues) : 1;
 
     for (let i = 0; i < data.rowCount; i++) {
-      const xv = Number(xCol.values[i] ?? 0);
-      const yv = Number(yCol.values[i] ?? 0);
+      const xv = xCol.values[i] != null ? Number(xCol.values[i]) : NaN;
+      const yv = yCol.values[i] != null ? Number(yCol.values[i]) : NaN;
+      if (isNaN(xv) || isNaN(yv)) continue; // skip rows with non-numeric coordinates
       if (isBubble) {
         scatterData.push([xv, yv, sizeValues[i]]);
       } else {

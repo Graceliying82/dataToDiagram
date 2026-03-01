@@ -43,9 +43,16 @@ export const waterfallRenderer: DiagramRenderer = {
       cumulative += d.value;
     });
 
-    // Total bar
-    baseData.push(0);
-    visibleData.push(total);
+    // Total bar: for a negative total, anchor the transparent base at `total`
+    // so the visible bar stacks upward from `total` back to 0. This keeps the
+    // label (position:'top') sitting at the zero-baseline, not floating mid-air.
+    if (total >= 0) {
+      baseData.push(0);
+      visibleData.push(total);
+    } else {
+      baseData.push(total);
+      visibleData.push(Math.abs(total));
+    }
     colors.push(totalColor);
 
     return {
