@@ -1,0 +1,25 @@
+Weekday,Hour,Traffic Volume
+Monday,0,120
+Monday,4,80
+Monday,8,850
+Monday,12,600
+Monday,16,920
+Monday,20,400
+Wednesday,0,150
+Wednesday,4,90
+Wednesday,8,880
+Wednesday,12,650
+Wednesday,16,950
+Wednesday,20,450
+Friday,0,200
+Friday,4,120
+Friday,8,900
+Friday,12,750
+Friday,16,1100
+Friday,20,800
+Sunday,0,300
+Sunday,4,100
+Sunday,8,250
+Sunday,12,500
+Sunday,16,600
+Sunday,20,550

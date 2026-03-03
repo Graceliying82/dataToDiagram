@@ -5,12 +5,15 @@
 **Coverage Tool:** V8
 
 ## Summary
-A comprehensive test suite was established for the core logic of the `dataToDiagram` engine, including `dataParser`, `specBuilder`, `legendUtils`, and all 14 `diagram Generators` (Bar, Line, Pie, Radar, Scatter, Waterfall, Combo, Sankey, Treemap, Sunburst, Funnel, Heatmap, Rose, Gauge). Edge cases for data parsing and diagram rendering have been addressed explicitly.
+A comprehensive test suite was established for the core logic of the `dataToDiagram` engine, including `dataParser`, `specBuilder`, `legendUtils`, and all 14 `diagram Generators`. This update explicitly adds coverage for the **"Show Total"** feature across all supported renderers (Waterfall, Stacked Bar, Donut Pie) and the `DiagramControls` UI component.
 
 **Result:** **All tests passed successfully.**
 
 ## Diagram Coverage Details
-The test suite validates **all 14 supported diagram types** dynamically without hardcoded separate files. A single registry test (`tests/diagrams/registry.test.ts`) loops over the `DIAGRAM_META` registry, fetching the specific renderer for each chart. For each diagram, it mocks the required data roles and executes the `toOption()` rendering logic to ensure valid, error-free ECharts configurations are generated.
+The test suite validates **all 14 supported diagram types** dynamically. Additionally, specialized tests verify the conditional rendering and calculation of totals for specific chart types:
+- **Waterfall**: Verified toggle between 3-color waterfall (with Total) and item-only waterfall.
+- **Stacked Bar**: Verified phantom `_total_` series generation and label summation.
+- **Donut Pie**: Verified centered `graphic` total value and sub-label rendering.
 
 ## Coverage Overview
 
@@ -23,13 +26,16 @@ The test suite validates **all 14 supported diagram types** dynamically without 
 | `types/`            | 100.00% | 100.00% | 100.00% | 100.00% |
 
 ## Detailed Analysis & Resolved Issues
-Based on initial test coverage metrics, the following edge cases were identified, addressed, and are now fully covered by tests:
 
-1. **Resolved: scatter.ts - Missing explicit coordinate mapping fallbacks:** 
-   * Added `tests/diagrams/scatter.test.ts` to ensure that string/invalid X/Y coordinates fed to numeric expectations are gracefully filtered out without halting execution or plotting `NaN`. Verified bubble sizing ratio calculations explicitly.
-2. **Resolved: waterfall.ts - Edge cases in totals logic:** 
-   * Added `tests/diagrams/waterfall.test.ts` to validate that negative total accumulations correctly anchor the transparent baseline block upward, keeping the labels situated perfectly on the 0-axis.
-3. **Resolved: dataParser.ts - Excel files:** 
-   * Added explicit mocks in `tests/engine/dataParser.test.ts` utilizing `xlsx`'s ArrayBuffer utilities to generate simulated Excel sheet inputs. Fully verified header extraction and column type mapping for Excel file drops.
+1. **"Show Total" Feature Coverage**:
+   - Added `tests/components/DiagramControls.test.tsx` using `jsdom` to verify the "Show Total" checkbox visibility logic and its integration with `onChange`.
+   - Expanded `tests/diagrams/waterfall.test.ts`, `tests/diagrams/bar.test.ts`, and `tests/diagrams/pie.test.ts` to cover all `showTotal` logic branches.
+2. **Environment Configuration**:
+   - Updated `vite.config.ts` to enable `globals` and `jsdom` for Vitest.
+   - Added `tests/setup.ts` to extend Vitest with `jest-dom` matchers.
+3. **Previously Resolved Issues**:
+   - Scatter coordinate mapping fallbacks.
+   - Waterfall negative total anchoring.
+   - Excel file parsing mocks.
 
 *All test files are centralized in the `/tests` root directory. Run tests locally using `npm run test`.*
