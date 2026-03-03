@@ -202,5 +202,6 @@ export function buildSpec(type: DiagramType, mappings: ColumnMapping[], title?: 
     mappings,
     style: { ...DEFAULT_STYLE },
     options: {},
+    disabledCategories: [],
   };
 }

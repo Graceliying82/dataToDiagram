@@ -13,7 +13,9 @@ export const pieRenderer: DiagramRenderer = {
 
     const isDonut = spec.options.donut === true;
     const isRose = spec.options.rose === true;
+    const showTotal = isDonut && spec.style.showTotal;
     const palette = spec.style.palette;
+    const disabledSet = new Set(spec.disabledCategories ?? []);
 
     const pieData = catCol.values
       .map((cat, i) => ({
@@ -36,7 +38,9 @@ export const pieRenderer: DiagramRenderer = {
           shadowOffsetY: 2,
         },
       }))
-      .filter(d => d.value > 0);
+      .filter(d => d.value > 0 && !disabledSet.has(d.name));
+
+    const grandTotal = pieData.reduce((sum, d) => sum + d.value, 0);
 
     return {
       title: { show: false }, // Using resizable graphic label instead
@@ -87,10 +91,39 @@ export const pieRenderer: DiagramRenderer = {
       ],
       graphic: [
         ...(((spec.style.showLegend ? createDraggableLegend(
-          catCol.values.map((val, i) => ({ id: String(val), label: String(val), color: palette[i % palette.length] })),
+          catCol.values
+            .filter((val) => !disabledSet.has(String(val)))
+            .map((val, i) => ({ id: String(val), label: String(val), color: palette[i % palette.length] })),
           spec
         ) : {}) as any).elements || []),
-        ...((spec.title ? createResizableLabel(spec.title, spec, { top: 12 }) : {} as any).elements || [])
+        ...((spec.title ? createResizableLabel(spec.title, spec, { top: 12 }) : {} as any).elements || []),
+        ...(showTotal ? [
+          {
+            type: 'text',
+            left: 'center',
+            top: '46%',
+            style: {
+              text: grandTotal.toLocaleString(),
+              fontSize: spec.style.fontSize + 6,
+              fontWeight: 700,
+              fill: '#1f2937',
+              textAlign: 'center',
+            },
+            z: 100,
+          },
+          {
+            type: 'text',
+            left: 'center',
+            top: '54%',
+            style: {
+              text: 'Total',
+              fontSize: spec.style.fontSize - 1,
+              fill: '#9ca3af',
+              textAlign: 'center',
+            },
+            z: 100,
+          },
+        ] : []),
       ] as NonNullable<EChartsOption['graphic']>,
       animationEasing: 'cubicOut',
       animationDuration: 800,

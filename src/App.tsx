@@ -149,7 +149,7 @@ export default function App() {
             </div>
 
             <div className="space-y-4">
-              <DiagramControls spec={spec} onChange={setSpec} />
+              <DiagramControls spec={spec} onChange={setSpec} data={data} />
               <DataPreview data={data} maxRows={5} />
             </div>
           </div>
