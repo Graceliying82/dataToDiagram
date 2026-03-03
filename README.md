@@ -1,73 +1,62 @@
-# React + TypeScript + Vite
+# dataToDiagram
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Transform your data into beautiful visuals instantly.**
 
-Currently, two official plugins are available:
+![dataToDiagram Hero](docs/images/hero.png)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+dataToDiagram is a minimalist, high-performance tool built to turn your CSV and Excel files into professional, interactive diagrams. Whether you need a simple bar chart or a complex sunburst, we've got you covered.
 
-## React Compiler
+## Getting Started
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Follow these simple steps to run dataToDiagram on your local machine:
 
-## Expanding the ESLint configuration
+1.  **Clone the repository**:
+    ```bash
+    git clone https://github.com/your-repo/dataToDiagram.git
+    cd dataToDiagram
+    ```
+2.  **Install dependencies**:
+    ```bash
+    npm install
+    ```
+3.  **Launch the application**:
+    ```bash
+    npm run dev
+    ```
+4.  **Open in your browser**: Navigate to `http://localhost:5173/` (or the port shown in your terminal).
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Chart Gallery
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+Explore the wide range of visual styles supported by dataToDiagram. Each chart is designed to be clean, responsive, and highly customizable.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+| Chart Type | Best For... | Preview |
+| :--- | :--- | :--- |
+| **Bar Chart** | Comparing categories and tracking totals. | ![Bar Chart](docs/images/gallery_bar_1772510865609.png) |
+| **Line & Combo** | Visualizing trends and correlations over time. | ![Line Chart](docs/images/gallery_line_1772511372534.png) |
+| **Pie & Donut** | Showing proportional relationships and grand totals. | ![Pie Chart](docs/images/gallery_pie_1772511425440.png) |
+| **Waterfall** | Understanding cumulative flow and bridge analysis. | ![Waterfall Chart](docs/images/gallery_waterfall_1772511014884.png) |
+| **Treemap** | Visualizing large hierarchical datasets compactly. | ![Treemap](docs/images/gallery_treemap_1772511054621.png) |
+| **Sunburst** | Exploring multi-layer branch structures. | ![Sunburst](docs/images/gallery_sunburst_1772511089140.png) |
+| **Heatmap** | Identifying patterns and peaks in dense data. | ![Heatmap](docs/images/gallery_heatmap_1772511111356.png) |
+| **Funnel** | Tracking conversion stages and process drop-offs. | ![Funnel](docs/images/gallery_funnel_1772511300029.png) |
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Sample Data
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Not sure what data to use? Check out the `samples/` directory for perfectly formatted CSV files to get you started:
+
+-   `sales_by_region.csv` (Bar, Pie, Rose)
+-   `monthly_metrics.csv` (Line, Combo, Scatter)
+-   `project_cost_waterfall.csv` (Waterfall)
+-   `hierarchical_org.csv` (Treemap, Sunburst)
+-   `traffic_heatmap.csv` (Heatmap)
+-   `conversion_funnel.csv` (Funnel)
+
+---
+
+## License
+
+MIT License. Free to use, modify, and distribute.

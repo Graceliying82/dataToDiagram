@@ -1,0 +1,13 @@
+Department,Team,Role,Budget
+Engineering,Frontend,Lead,150000
+Engineering,Frontend,Senior,120000
+Engineering,Frontend,Junior,80000
+Engineering,Backend,Lead,160000
+Engineering,Backend,Senior,130000
+Engineering,Infrastructure,Lead,180000
+Design,Product,Lead,140000
+Design,UX Research,Senior,110000
+Marketing,Growth,Manager,130000
+Marketing,Content,Writer,70000
+Sales,Enterprise,Director,200000
+Sales,SMB,Manager,100000
