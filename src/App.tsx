@@ -19,6 +19,7 @@ export default function App() {
   const [fileName, setFileName] = useState('');
   const [spec, setSpec] = useState<DiagramSpec | null>(null);
   const [recommended, setRecommended] = useState<DiagramType[]>([]);
+  const [applicableTypes, setApplicableTypes] = useState<DiagramType[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [chartInstance, setChartInstance] = useState<ECharts | null>(null);
 
@@ -30,6 +31,7 @@ export default function App() {
       setFileName(file.name);
 
       const suggestions = suggestDiagrams(parsed);
+      setApplicableTypes(suggestions.map(s => s.type));
       setRecommended(suggestions.slice(0, 3).map(s => s.type));
 
       if (suggestions.length > 0) {
@@ -37,7 +39,7 @@ export default function App() {
         setSpec(buildSpec(top.type, top.mappings, file.name.replace(/\.\w+$/, '')));
       }
 
-      setStep('pick');
+      setStep('view');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to parse file');
     }
@@ -115,6 +117,7 @@ export default function App() {
                   setStep('view');
                 }}
                 recommended={recommended}
+                applicable={applicableTypes}
               />
             </div>
 
@@ -133,25 +136,53 @@ export default function App() {
 
         {/* Step 3: View & refine */}
         {step === 'view' && data && spec && (
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <button
-                  onClick={() => setStep('pick')}
-                  className="text-sm text-indigo-600 hover:text-indigo-800"
-                >
-                  &larr; Change diagram type
-                </button>
+          <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr_320px] gap-8">
+            {/* Left Sidebar: Diagram Type Selector */}
+            <aside className="space-y-4">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider">Chart Type</h3>
+              </div>
+              <div className="flex flex-col gap-3">
+                <DiagramPicker
+                  selected={spec.type}
+                  onSelect={handleDiagramSelect}
+                  recommended={recommended}
+                  applicable={applicableTypes}
+                  variant="compact"
+                />
+              </div>
+            </aside>
+
+            {/* Middle: Canvas */}
+            <div className="space-y-6">
+              <div className="flex items-center justify-end">
                 <ExportButton chartInstance={chartInstance} />
               </div>
 
-              <DiagramCanvas data={data} spec={spec} onChartReady={setChartInstance} />
+              <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+                <DiagramCanvas data={data} spec={spec} onChartReady={setChartInstance} />
+              </div>
             </div>
 
-            <div className="space-y-4">
-              <DiagramControls spec={spec} onChange={setSpec} data={data} />
-              <DataPreview data={data} maxRows={5} />
-            </div>
+            {/* Right Sidebar: Controls & Preview */}
+            <aside className="space-y-6 relative group">
+              <div className="transition-all duration-500 opacity-20 group-hover:opacity-100 transform translate-x-4 group-hover:translate-x-0">
+                <DiagramControls spec={spec} onChange={setSpec} data={data} />
+              </div>
+              <div className="opacity-40 group-hover:opacity-100 transition-opacity duration-500">
+                <DataPreview data={data} maxRows={5} />
+              </div>
+
+              {/* Hint when not hovered */}
+              <div className="absolute right-full top-1/2 -translate-y-1/2 pr-4 pointer-events-none group-hover:opacity-0 transition-opacity duration-300">
+                <div className="flex items-center gap-2 text-xs font-bold text-slate-400 rotate-90 origin-right whitespace-nowrap">
+                  <span>SETTINGS & PREVIEW</span>
+                  <svg className="w-3 h-3 rotate-[-90deg]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </div>
+              </div>
+            </aside>
           </div>
         )}
       </main>

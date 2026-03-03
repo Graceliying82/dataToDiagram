@@ -57,7 +57,7 @@ export const PALETTES: Record<string, { colors: string[]; label: string; descrip
   },
 };
 
-export const DEFAULT_PALETTE = 'ssp-bright';
+export const DEFAULT_PALETTE = 'ssp-divergent';
 
 // Flat color array export for backwards compatibility
 export const PALETTE_COLORS: Record<string, string[]> = Object.fromEntries(
