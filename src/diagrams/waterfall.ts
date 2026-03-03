@@ -14,15 +14,22 @@ export const waterfallRenderer: DiagramRenderer = {
     const positiveColor = palette[0] || '#22c55e';
     const negativeColor = palette[1] || '#ef4444';
     const totalColor = palette[2] || '#3b82f6';
+    const disabledSet = new Set(spec.disabledCategories ?? []);
 
     // Build waterfall data
-    const items = catCol.values.map((cat, i) => ({
+    const allItems = catCol.values.map((cat, i) => ({
       label: String(cat),
       value: Number(valCol.values[i] ?? 0),
     }));
 
+    // Filter to active items only
+    const items = allItems.filter(item => !disabledSet.has(item.label));
+
     const total = items.reduce((sum, d) => sum + d.value, 0);
-    const categories = [...items.map(d => d.label), 'Total'];
+    const showTotal = spec.style.showTotal;
+    const categories = showTotal
+      ? [...items.map(d => d.label), 'Total']
+      : items.map(d => d.label);
 
     // Calculate base (transparent) and visible bar values
     const baseData: number[] = [];
@@ -46,14 +53,16 @@ export const waterfallRenderer: DiagramRenderer = {
     // Total bar: for a negative total, anchor the transparent base at `total`
     // so the visible bar stacks upward from `total` back to 0. This keeps the
     // label (position:'top') sitting at the zero-baseline, not floating mid-air.
-    if (total >= 0) {
-      baseData.push(0);
-      visibleData.push(total);
-    } else {
-      baseData.push(total);
-      visibleData.push(Math.abs(total));
+    if (showTotal) {
+      if (total >= 0) {
+        baseData.push(0);
+        visibleData.push(total);
+      } else {
+        baseData.push(total);
+        visibleData.push(Math.abs(total));
+      }
+      colors.push(totalColor);
     }
-    colors.push(totalColor);
 
     return {
       title: {
@@ -79,7 +88,7 @@ export const waterfallRenderer: DiagramRenderer = {
           const visible = list.find(p => p.seriesIndex === 1);
           if (!visible) return '';
           const idx = categories.indexOf(visible.name);
-          const isTotal = idx === categories.length - 1;
+          const isTotal = showTotal && idx === categories.length - 1;
           const rawValue = isTotal ? total : items[idx]?.value ?? 0;
           return `<strong>${visible.name}</strong><br/>Value: ${rawValue.toLocaleString()}`;
         },
@@ -147,7 +156,7 @@ export const waterfallRenderer: DiagramRenderer = {
             position: 'top',
             formatter: (params: { dataIndex: number }) => {
               const idx = params.dataIndex;
-              const isTotal = idx === categories.length - 1;
+              const isTotal = showTotal && idx === categories.length - 1;
               const rawValue = isTotal ? total : items[idx]?.value ?? 0;
               return rawValue.toLocaleString();
             },

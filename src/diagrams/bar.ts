@@ -15,7 +15,15 @@ export const barRenderer: DiagramRenderer = {
 
     const categories = catCol.values.map(String);
     const isStacked = spec.options.stacked === true;
+    const showTotal = isStacked && spec.style.showTotal;
     const palette = spec.style.palette;
+    const disabledSet = new Set(spec.disabledCategories ?? []);
+
+    // Filter categories and build active indices
+    const activeIndices = categories
+      .map((_, idx) => idx)
+      .filter(idx => !disabledSet.has(categories[idx]));
+    const activeCategories = activeIndices.map(i => categories[i]);
 
     const series: EChartsOption['series'] = valCols.map((col, ci) => {
       const color0 = palette[ci % palette.length];
@@ -24,7 +32,7 @@ export const barRenderer: DiagramRenderer = {
         name: col.name,
         type: 'bar' as const,
         stack: isStacked ? 'total' : undefined,
-        data: col.values.map(v => Number(v ?? 0)),
+        data: activeIndices.map(idx => Number(col.values[idx] ?? 0)),
         label: {
           show: spec.style.showLabels,
           position: 'top' as const,
@@ -59,6 +67,32 @@ export const barRenderer: DiagramRenderer = {
       };
     });
 
+    if (showTotal) {
+      const totals = activeIndices.map((idx) =>
+        valCols.reduce((sum, col) => sum + Number(col.values[idx] ?? 0), 0)
+      );
+      (series as unknown[]).push({
+        name: '_total_',
+        type: 'bar',
+        stack: 'total',
+        data: totals.map((total) => ({
+          value: 0,
+          label: {
+            show: true,
+            position: 'top',
+            formatter: () => total.toLocaleString(),
+            fontSize: spec.style.fontSize,
+            color: '#374151',
+            fontWeight: 600,
+          },
+        })),
+        itemStyle: { color: 'transparent', borderColor: 'transparent' },
+        emphasis: { itemStyle: { color: 'transparent', borderColor: 'transparent' } },
+        tooltip: { show: false },
+        legendHoverLink: false,
+      });
+    }
+
     return {
       title: { show: false }, // Using resizable graphic label instead
       tooltip: {
@@ -80,11 +114,11 @@ export const barRenderer: DiagramRenderer = {
       },
       xAxis: {
         type: 'category',
-        data: categories,
+        data: activeCategories,
         axisLabel: {
           fontSize: spec.style.fontSize,
           color: '#6b7280',
-          rotate: categories.length > 8 ? 30 : 0,
+          rotate: activeCategories.length > 8 ? 30 : 0,
         },
         axisLine: { lineStyle: { color: '#e5e7eb' } },
         axisTick: { show: false },

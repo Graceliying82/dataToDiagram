@@ -1,9 +1,11 @@
 import type { DiagramSpec, DiagramStyle } from '../types/diagram';
+import type { DataSet } from '../types/data';
 import { PALETTES } from '../themes/palettes';
 
 interface DiagramControlsProps {
   spec: DiagramSpec;
   onChange: (spec: DiagramSpec) => void;
+  data?: DataSet | null;
 }
 
 const POSITION_OPTIONS: { value: DiagramStyle['legendPosition']; label: string; icon: string }[] = [
@@ -13,10 +15,15 @@ const POSITION_OPTIONS: { value: DiagramStyle['legendPosition']; label: string; 
   { value: 'bottom-right', label: 'Bottom right', icon: '↘' },
 ];
 
-export function DiagramControls({ spec, onChange }: DiagramControlsProps) {
+export function DiagramControls({ spec, onChange, data }: DiagramControlsProps) {
   const updateStyle = (partial: Partial<DiagramStyle>) => {
     onChange({ ...spec, style: { ...spec.style, ...partial } });
   };
+
+  // Derive categories from the category mapping
+  const categoryMapping = spec.mappings.find(m => m.role === 'category');
+  const categoryCol = categoryMapping && data ? data.columns.find(c => c.name === categoryMapping.columnName) : null;
+  const allCategories = categoryCol ? [...new Set(categoryCol.values.map(String))] : [];
 
   const activePaletteName = Object.entries(PALETTES).find(
     ([, v]) => JSON.stringify(v.colors) === JSON.stringify(spec.style.palette)
@@ -97,7 +104,94 @@ export function DiagramControls({ spec, onChange }: DiagramControlsProps) {
             {label}
           </label>
         ))}
+
+        {/* Pie chart options */}
+        {spec.type === 'pie' && (
+          <>
+            <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={spec.options.donut === true}
+                onChange={(e) => onChange({ ...spec, options: { ...spec.options, donut: e.target.checked } })}
+                className="rounded border-gray-300 text-indigo-500 focus:ring-indigo-300"
+              />
+              Donut Mode
+            </label>
+            <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={spec.options.rose === true}
+                onChange={(e) => onChange({ ...spec, options: { ...spec.options, rose: e.target.checked } })}
+                className="rounded border-gray-300 text-indigo-500 focus:ring-indigo-300"
+              />
+              Rose Mode
+            </label>
+          </>
+        )}
+
+        {/* Bar chart options */}
+        {spec.type === 'bar' && (
+          <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={spec.options.stacked === true}
+              onChange={(e) => onChange({ ...spec, options: { ...spec.options, stacked: e.target.checked } })}
+              className="rounded border-gray-300 text-indigo-500 focus:ring-indigo-300"
+            />
+            Stacked Mode
+          </label>
+        )}
+
+        {(spec.type === 'waterfall' ||
+          (spec.type === 'bar' && spec.options.stacked === true) ||
+          (spec.type === 'pie' && spec.options.donut === true)) && (
+          <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={spec.style.showTotal}
+              onChange={(e) => updateStyle({ showTotal: e.target.checked })}
+              className="rounded border-gray-300 text-indigo-500 focus:ring-indigo-300"
+            />
+            Show Total
+          </label>
+        )}
       </div>
+
+      {/* Filter Data — show toggleable categories */}
+      {allCategories.length > 0 && (
+        <div>
+          <label className="block text-xs text-gray-500 mb-2">Filter Data</label>
+          <div className="flex flex-wrap gap-2">
+            {allCategories.map((cat, idx) => {
+              const isDisabled = spec.disabledCategories.includes(cat);
+              const palette = spec.style.palette;
+              const dotColor = palette[idx % palette.length];
+              return (
+                <button
+                  key={cat}
+                  onClick={() => {
+                    const updated = isDisabled
+                      ? spec.disabledCategories.filter(c => c !== cat)
+                      : [...spec.disabledCategories, cat];
+                    onChange({ ...spec, disabledCategories: updated });
+                  }}
+                  className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-all ${
+                    isDisabled
+                      ? 'bg-gray-100 text-gray-400 line-through border border-gray-200'
+                      : 'bg-indigo-50 text-gray-700 border border-indigo-200 hover:bg-indigo-100'
+                  }`}
+                >
+                  <div
+                    className="w-2 h-2 rounded-full flex-shrink-0"
+                    style={{ backgroundColor: isDisabled ? '#d1d5db' : dotColor }}
+                  />
+                  {cat}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Legend Position — only shown when legend is visible */}
       {spec.style.showLegend && (

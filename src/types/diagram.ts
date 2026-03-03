@@ -26,6 +26,7 @@ export interface DiagramStyle {
   showLegend: boolean;
   showLabels: boolean;
   showGrid: boolean;
+  showTotal: boolean;
   animate: boolean;
   legendPosition: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
 }
@@ -36,6 +37,7 @@ export interface DiagramSpec {
   mappings: ColumnMapping[];
   style: DiagramStyle;
   options: Record<string, unknown>;
+  disabledCategories: string[];
 }
 
 export interface DiagramMeta {
@@ -54,6 +56,7 @@ export const DEFAULT_STYLE: DiagramStyle = {
   showLegend: true,
   showLabels: true,
   showGrid: true,
+  showTotal: true,
   animate: true,
   legendPosition: 'bottom-right',
 };
