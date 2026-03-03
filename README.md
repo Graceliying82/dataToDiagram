@@ -1,9 +1,6 @@
 # dataToDiagram
 
 **Transform your data into beautiful visuals instantly.**
-
-![dataToDiagram Hero](docs/images/hero.png)
-
 dataToDiagram is a minimalist, high-performance tool built to turn your CSV and Excel files into professional, interactive diagrams. Whether you need a simple bar chart or a complex sunburst, we've got you covered.
 
 ## Getting Started
